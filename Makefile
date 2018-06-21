@@ -78,16 +78,29 @@ coverage: clean-coverage ## check code coverage quickly with the default Python
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
+dist: clean ## builds source and wheel package
+	python setup.py sdist
+	python setup.py bdist_wheel
+	ls -l dist
+
 release: dist ## package and upload a release
 	twine upload dist/*
 
 test-release: dist ## package and upload a release on TestPyPI
 	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
-dist: clean ## builds source and wheel package
-	python setup.py sdist
-	python setup.py bdist_wheel
-	ls -l dist
-
 install: clean ## install the package to the active Python's site-packages
 	python setup.py install
+
+auto-release: clean
+	git checkout stable
+	git merge --no-ff master    # This creates a merge commit
+	bumpversion release   # This creates a new commit and a TAG
+	git push --tags origin stable
+	python setup.py sdist
+	python setup.py bdist_wheel
+	twine upload dist/*
+	git checkout master
+	git merge stable
+	bumpversion --no-tag patch
+	git push
