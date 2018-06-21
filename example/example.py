@@ -28,15 +28,6 @@ def get_logging_config(logging_conf):
                 'formatter': 'default',
                 'filters': ['session_none']
             },
-            # 'rotating_file': {
-            #     'level': logging_conf['level'],
-            #     'class': 'cloghandler.ConcurrentRotatingFileHandler',
-            #     'formatter': 'default',
-            #     'filters': ['session_none'],
-            #     'filename': os.path.join(logging_conf['logdir'], 'api.log'),
-            #     'maxBytes': 100 * 1024 * 1024,    # 100Mb
-            #     'backupCount': 5,
-            # }
         },
         'loggers': {
             'requests': {
@@ -101,4 +92,4 @@ def get_app(api_conf):
 
 
 if __name__ == '__main__':
-    app = get_app('api/api.ini')
+    app = get_app('example.ini')

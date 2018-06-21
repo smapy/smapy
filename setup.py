@@ -15,6 +15,7 @@ install_requires = [
     'gevent>==1.2.2',
     'gunicorn>=19.8.1',
     'pymongo>=3.6.1',
+    'requests>=2.19.1',
 ]
 
 tests_require = [
