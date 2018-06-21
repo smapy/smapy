@@ -2,7 +2,7 @@
 
 __author__ = 'Carles Sala Cladellas'
 __email__ = 'carles@pythiac.com',
-__version__ = '0.0.1-dev'
+__version__ = '0.0.1'
 
 import logging
 import traceback
