@@ -7,6 +7,6 @@
 [pypi-url]: https://pypi.python.org/pypi/smapy
 
 
-Simple Modular API written in Python.
+Simple Modular APIs in Python.
 
 - Free software: MIT license
