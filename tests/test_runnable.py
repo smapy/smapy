@@ -21,7 +21,7 @@ class TestRunnableMeta(TestCase):
         class Test(Base):
             pass
 
-        self.assertEqual(Test.name, 'runnable_test.Test')
+        self.assertEqual(Test.name, 'test_runnable.Test')
 
     def test_custom_name(self):
 

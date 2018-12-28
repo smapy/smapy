@@ -5,8 +5,8 @@ from unittest.mock import Mock, call, patch
 
 import falcon
 
-import smapy
-import smapy.actions.hello
+from smapy import api, middleware
+from smapy.actions import hello
 
 
 class TestExceptionSerializer(TestCase):
@@ -16,7 +16,7 @@ class TestExceptionSerializer(TestCase):
         resp = Mock()
         exception = Mock()
         exception.to_dict.return_value = {'an': 'exception'}
-        smapy.exception_serializer(None, resp, exception)
+        api.exception_serializer(None, resp, exception)
 
         self.assertEqual({'an': 'exception'}, resp.body)
 
@@ -34,7 +34,7 @@ class TestUnknownExceptionSerializer(TestCase):
 
             except falcon.HTTPError as ex:
                 original = ex
-                smapy.unknown_exception_serializer(ex, None, None, None)
+                api.unknown_exception_serializer(ex, None, None, None)
 
         self.assertEqual(original, raised.exception)
 
@@ -49,7 +49,7 @@ class TestUnknownExceptionSerializer(TestCase):
 
             except Exception as ex:
                 tb = traceback.format_exc().splitlines()[-3:]
-                smapy.unknown_exception_serializer(ex, None, None, None)
+                api.unknown_exception_serializer(ex, None, None, None)
 
         exception = raised.exception
         self.assertEqual('Exception: a message', exception.title)
@@ -59,8 +59,8 @@ class TestUnknownExceptionSerializer(TestCase):
 class TestAPI(TestCase):
 
     def setUp(self):
-        # Reload the smapy module to get rid of previous mocking
-        reload(smapy)
+        # Reload the api module to get rid of previous mocking
+        reload(api)
 
     # #########################
     # _is_action(obj, module) #
@@ -70,32 +70,32 @@ class TestAPI(TestCase):
         obj = 'not a class'
         module = None
 
-        is_action = smapy.API._is_action(obj, module)
+        is_action = api.API._is_action(obj, module)
         self.assertFalse(is_action)
 
     def test__is_action_imported(self):
         """If object was imported, it is not an Action."""
         # We use an imported module
-        obj = smapy.MongoClient    # This is imported from pymongo inside smapy/__init__.py
-        module = smapy
+        obj = api.MongoClient    # This is imported from pymongo inside api/__init__.py
+        module = api
 
-        is_action = smapy.API._is_action(obj, module)
+        is_action = api.API._is_action(obj, module)
         self.assertFalse(is_action)
 
     def test__is_action_not_an_action(self):
         """Obj is not a BaseAction subclass."""
-        obj = smapy.API    # This is truly defined inside smapy/__init__.py, but it's not an Action
-        module = smapy
+        obj = api.API    # This is truly defined inside api/__init__.py, but it's not an Action
+        module = api
 
-        is_action = smapy.API._is_action(obj, module)
+        is_action = api.API._is_action(obj, module)
         self.assertFalse(is_action)
 
     def test__is_action_true(self):
         """Obj is really a BaseAction subclass."""
-        obj = smapy.actions.hello.World
-        module = smapy.actions.hello
+        obj = hello.World
+        module = hello
 
-        is_action = smapy.API._is_action(obj, module)
+        is_action = api.API._is_action(obj, module)
         self.assertTrue(is_action)
 
     # ###############################
@@ -105,9 +105,9 @@ class TestAPI(TestCase):
         """If runnable is already registered, raise an exception."""
 
         # Override __init__
-        smapy.API.__init__ = lambda x: None
+        api.API.__init__ = lambda x: None
 
-        api_ = smapy.API()
+        api_ = api.API()
 
         api_.runnables = {'a_runnable': Mock()}
 
@@ -124,9 +124,9 @@ class TestAPI(TestCase):
         """If runnable is NOT registered, set it into runnables."""
 
         # Override __init__
-        smapy.API.__init__ = lambda x: None
+        api.API.__init__ = lambda x: None
 
-        api_ = smapy.API()
+        api_ = api.API()
 
         api_.runnables = dict()
 
@@ -151,8 +151,8 @@ class TestAPI(TestCase):
         modules = {'a_module': module}
 
         # Override __init__
-        smapy.API.__init__ = lambda x: None
-        api_ = smapy.API()
+        api.API.__init__ = lambda x: None
+        api_ = api.API()
 
         # Mock _is_action and _add_runnable
         def _is_action(obj, module):
@@ -178,8 +178,8 @@ class TestAPI(TestCase):
         resource = Mock()
 
         # Override __init__
-        smapy.API.__init__ = lambda x: None
-        api_ = smapy.API()
+        api.API.__init__ = lambda x: None
+        api_ = api.API()
 
         # Mock _add_runnable and add_route
         api_._add_runnable = Mock()
@@ -196,7 +196,7 @@ class TestAPI(TestCase):
     # #############################
     # _set_mongodb_up(self, conf) #
     # #############################
-    @patch('smapy.MongoClient')
+    @patch('smapy.api.MongoClient')
     def test__set_mongodb_up_no_audit(self, mongo_client_mock):
         """If audit is not defined, reuse self.mongodb."""
 
@@ -214,8 +214,8 @@ class TestAPI(TestCase):
         }
 
         # Override __init__
-        smapy.API.__init__ = lambda x: None
-        api_ = smapy.API()
+        api.API.__init__ = lambda x: None
+        api_ = api.API()
 
         # Actual call
         api_._set_mongodb_up(conf)
@@ -226,7 +226,7 @@ class TestAPI(TestCase):
         self.assertEqual('a_database', api_.mongodb)
         self.assertEqual('a_database', api_.auditdb)
 
-    @patch('smapy.MongoClient')
+    @patch('smapy.api.MongoClient')
     def test__set_mongodb_up_audit(self, mongo_client_mock):
         """If audit is defined, create a new client."""
 
@@ -249,8 +249,8 @@ class TestAPI(TestCase):
         }
 
         # Override __init__
-        smapy.API.__init__ = lambda x: None
-        api_ = smapy.API()
+        api.API.__init__ = lambda x: None
+        api_ = api.API()
 
         # Actual call
         api_._set_mongodb_up(conf)
@@ -268,7 +268,7 @@ class TestAPI(TestCase):
     # ######################
     # __init__(self, conf) #
     # ######################
-    @patch('smapy.RemoteRunnable')
+    @patch('smapy.api.RemoteRunnable')
     def test___init__(self, remote_runnable_mock):
         """Make sure that everything is called with the right parameters."""
 
@@ -285,11 +285,11 @@ class TestAPI(TestCase):
         def _get_mongodb(conf):
             return conf
 
-        smapy.API._get_mongodb = Mock(side_effect=_get_mongodb)
-        smapy.API.add_route = Mock()
+        api.API._get_mongodb = Mock(side_effect=_get_mongodb)
+        api.API.add_route = Mock()
 
         # Actual call
-        api_ = smapy.API(conf)
+        api_ = api.API(conf)
 
         # Asserts
         _get_mongodb_calls = [
@@ -302,14 +302,14 @@ class TestAPI(TestCase):
         # Here we go into the API._middleware list and look for the classes
         # which the registered methods belong to.
         self.assertEqual(2, len(api_._middleware[0]))
-        self.assertIsInstance(api_._middleware[0][0][0].__self__, smapy.middleware.JSONSerializer)
-        self.assertIsInstance(api_._middleware[0][1][0].__self__, smapy.middleware.ResponseBuilder)
+        self.assertIsInstance(api_._middleware[0][0][0].__self__, middleware.JSONSerializer)
+        self.assertIsInstance(api_._middleware[0][1][0].__self__, middleware.ResponseBuilder)
 
         exception_serializer = api_._serialize_error
-        self.assertEqual(smapy.exception_serializer, exception_serializer)
+        self.assertEqual(api.exception_serializer, exception_serializer)
 
         unknown_exception_serializer = {e: f for e, f in api_._error_handlers}[Exception]
-        self.assertEqual(smapy.unknown_exception_serializer, unknown_exception_serializer)
+        self.assertEqual(api.unknown_exception_serializer, unknown_exception_serializer)
 
         self.assertEqual(api_.endpoint, 'an_endpoint')
 

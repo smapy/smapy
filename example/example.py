@@ -1,6 +1,6 @@
-#!/usr/bin/env python3.4
+# -*- coding: utf-8 -*-
+
 import logging
-import logging.config
 import os
 
 from smapy.logging import SessionFilter
@@ -8,7 +8,7 @@ from smapy.utils import setenv, read_conf
 
 
 def get_logging_config(logging_conf):
-    dict_config = {
+    return {
         'version': 1,
         'disable_existing_loggers': False,
         'formatters': {
@@ -47,19 +47,6 @@ def get_logging_config(logging_conf):
             },
         }
     }
-    return dict_config
-
-
-def backdoor(bind, api):
-    from gevent.backdoor import BackdoorServer
-
-    print("Debugging backdoor listening at {}".format(bind))
-
-    host, port = tuple(bind.split(':'))
-    server = BackdoorServer((host, int(port)),
-                            banner="API backdoor",
-                            locals={'api': api})
-    server.serve_forever()
 
 
 def get_app(api_conf):
@@ -84,12 +71,4 @@ def get_app(api_conf):
     # Testing
     api.add_resource('/hello_world', resources.misc.HelloWorld)
 
-    backdoor_bind = os.getenv('BACKDOOR')
-    if backdoor_bind:
-        backdoor(backdoor_bind, api)
-
     return api
-
-
-if __name__ == '__main__':
-    app = get_app('example.ini')

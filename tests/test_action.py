@@ -68,14 +68,14 @@ class TestBaseAction(TestCase):
         message = {'a': 'message'}
         test_action.run_local(message)
 
-        project_dir = __file__.replace('tests/smapy/action_test.py', '')
+        project_dir = __file__.replace('tests/test_action.py', '')
 
         # Asserts
         exception = [
             'Traceback (most recent call last):\n',
             '  File "{}smapy/action.py", line 63, in run_local\n'
             '    self.process(message)\n'.format(project_dir),
-            '  File "{}tests/smapy/action_test.py", line 53, in process\n'
+            '  File "{}tests/test_action.py", line 53, in process\n'
             '    raise Exception("An Exception")\n'.format(project_dir),
             'Exception: An Exception\n'
         ]
@@ -116,14 +116,14 @@ class TestBaseAction(TestCase):
         message = {'a': 'message'}
         self.assertRaises(SystemExit, test_action.run_local, message)
 
-        project_dir = __file__.replace('tests/smapy/action_test.py', '')
+        project_dir = __file__.replace('tests/test_action.py', '')
 
         # Asserts
         exception = [
             'Traceback (most recent call last):\n',
             '  File "{}smapy/action.py", line 63, in run_local\n'
             '    self.process(message)\n'.format(project_dir),
-            '  File "{}tests/smapy/action_test.py", line 101, in process\n'
+            '  File "{}tests/test_action.py", line 101, in process\n'
             '    raise SystemExit()\n'.format(project_dir),
             'SystemExit\n'
         ]
