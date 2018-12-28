@@ -1,0 +1,5 @@
+smapy
+=====
+
+.. automodule:: smapy
+    :members:

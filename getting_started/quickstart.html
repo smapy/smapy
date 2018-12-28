@@ -1,0 +1,327 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Quickstart &mdash; Smapy 0.0.2-dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="smapy" href="../api/smapy.html" />
+    <link rel="prev" title="Installation" href="install.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Smapy
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">What is Smapy?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/smapy.html">smapy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/smapy.runnable.html">smapy.runnable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/smapy.action.html">smapy.action</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/smapy.resource.html">smapy.resource</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">History</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Smapy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Quickstart</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/csala/Smapy/blob/master/docs/getting_started/quickstart.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="quickstart">
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
+<p>To run the example, simple execute <cite>example.sh</cite> on a terminal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./example.sh
+</pre></div>
+</div>
+<p>After that, you can start playing with it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl localhost:8001/hello
+{
+    &quot;elapsed&quot;: 0.08,
+    &quot;host&quot;: &quot;hostname&quot;,
+    &quot;in_ts&quot;: &quot;2018-05-06T20:37:48.671867&quot;,
+    &quot;out_ts&quot;: &quot;2018-05-06T20:37:48.671947&quot;,
+    &quot;pid&quot;: 31789,
+    &quot;results&quot;: null,
+    &quot;session&quot;: null,
+    &quot;status&quot;: &quot;404 Not Found&quot;
+}
+
+$ curl localhost:8001/hello_world
+{
+    &quot;elapsed&quot;: 12.044,
+    &quot;host&quot;: &quot;hostname&quot;,
+    &quot;in_ts&quot;: &quot;2018-05-06T20:37:58.759039&quot;,
+    &quot;out_ts&quot;: &quot;2018-05-06T20:37:58.771083&quot;,
+    &quot;pid&quot;: 31789,
+    &quot;results&quot;: null,
+    &quot;session&quot;: &quot;5aef67a6ab17857c2d81a6ea&quot;,
+    &quot;status&quot;: &quot;200 OK&quot;
+}
+
+$ curl localhost:8001/hello_world?sync=True
+{
+    &quot;elapsed&quot;: 26.668,
+    &quot;host&quot;: &quot;hostname&quot;,
+    &quot;in_ts&quot;: &quot;2018-05-06T20:38:03.903315&quot;,
+    &quot;out_ts&quot;: &quot;2018-05-06T20:38:03.929983&quot;,
+    &quot;pid&quot;: 31789,
+    &quot;results&quot;: {
+        &quot;hello&quot;: &quot;world!&quot;,
+        &quot;sync&quot;: &quot;True&quot;
+    },
+    &quot;session&quot;: &quot;5aef67abab17857c2d81a6ec&quot;,
+    &quot;status&quot;: &quot;200 OK&quot;
+}
+
+$ curl localhost:8001/report?session=5aef67a6ab17857c2d81a6ea
+{
+    &quot;elapsed&quot;: 19.758,
+    &quot;host&quot;: &quot;hostname&quot;,
+    &quot;in_ts&quot;: &quot;2018-05-06T20:39:49.670267&quot;,
+    &quot;out_ts&quot;: &quot;2018-05-06T20:39:49.690025&quot;,
+    &quot;pid&quot;: 31789,
+    &quot;results&quot;: {
+        &quot;actions&quot;: {
+            &quot;OK&quot;: 1
+        },
+        &quot;last_activity&quot;: &quot;2018-05-06T20:37:58.812000&quot;,
+        &quot;session&quot;: {
+            &quot;_id&quot;: &quot;5aef67a6ab17857c2d81a6ea&quot;,
+            &quot;alive&quot;: false,
+            &quot;body&quot;: {},
+            &quot;elapsed&quot;: &quot;0:00:00.058000&quot;,
+            &quot;env&quot;: {
+                &quot;HTTP_ACCEPT&quot;: &quot;*/*&quot;,
+                &quot;HTTP_HOST&quot;: &quot;localhost:8001&quot;,
+                &quot;HTTP_USER_AGENT&quot;: &quot;curl/7.47.0&quot;,
+                &quot;PATH_INFO&quot;: &quot;/hello_world&quot;,
+                &quot;QUERY_STRING&quot;: &quot;&quot;,
+                &quot;RAW_URI&quot;: &quot;/hello_world&quot;,
+                &quot;REMOTE_ADDR&quot;: &quot;127.0.0.1&quot;,
+                &quot;REMOTE_PORT&quot;: &quot;50636&quot;,
+                &quot;REQUEST_METHOD&quot;: &quot;GET&quot;,
+                &quot;SCRIPT_NAME&quot;: &quot;&quot;,
+                &quot;SERVER_NAME&quot;: &quot;127.0.0.1&quot;,
+                &quot;SERVER_PORT&quot;: &quot;8001&quot;,
+                &quot;SERVER_PROTOCOL&quot;: &quot;HTTP/1.1&quot;,
+                &quot;SERVER_SOFTWARE&quot;: &quot;gunicorn/19.8.1&quot;
+            },
+            &quot;host&quot;: &quot;hostname&quot;,
+            &quot;in_ts&quot;: &quot;2018-05-06T20:37:58.759000&quot;,
+            &quot;out_ts&quot;: &quot;2018-05-06T20:37:58.817000&quot;,
+            &quot;params&quot;: {},
+            &quot;pid&quot;: 31789,
+            &quot;resource&quot;: &quot;misc.HelloWorld&quot;,
+            &quot;response&quot;: {
+                &quot;hello&quot;: &quot;world!&quot;
+            },
+            &quot;status&quot;: &quot;OK&quot;,
+            &quot;sync&quot;: false
+        },
+        &quot;session_data&quot;: {
+            &quot;links&quot;: 0,
+            &quot;occurrences&quot;: 0,
+            &quot;post&quot;: 0
+        }
+    },
+    &quot;session&quot;: &quot;5aef6815ab17857c2d81a6ef&quot;,
+    &quot;status&quot;: &quot;200 OK&quot;
+}
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../api/smapy.html" class="btn btn-neutral float-right" title="smapy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="install.html" class="btn btn-neutral" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Carles Sala
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

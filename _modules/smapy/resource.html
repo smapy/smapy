@@ -1,0 +1,459 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>smapy.resource &mdash; Smapy 0.0.2-dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Smapy
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">What is Smapy?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/smapy.html">smapy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/smapy.runnable.html">smapy.runnable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/smapy.action.html">smapy.action</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/smapy.resource.html">smapy.resource</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">History</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Smapy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../smapy.html">smapy</a> &raquo;</li>
+        
+      <li>smapy.resource</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for smapy.resource</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">abstractmethod</span>
+
+<span class="kn">import</span> <span class="nn">falcon</span>
+<span class="kn">import</span> <span class="nn">gevent</span>
+<span class="kn">from</span> <span class="nn">gevent.pool</span> <span class="k">import</span> <span class="n">Pool</span>
+
+<span class="kn">from</span> <span class="nn">smapy.runnable</span> <span class="k">import</span> <span class="n">Runnable</span>
+<span class="kn">from</span> <span class="nn">smapy.utils</span> <span class="k">import</span> <span class="n">get_bool</span><span class="p">,</span> <span class="n">get_ms</span>
+
+
+<div class="viewcode-block" id="BaseResource"><a class="viewcode-back" href="../../api/smapy.resource.html#smapy.resource.BaseResource">[docs]</a><span class="k">class</span> <span class="nc">BaseResource</span><span class="p">(</span><span class="n">Runnable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TODO:</span>
+<span class="sd">        - implement session tracking</span>
+<span class="sd">        - implement exception tracking</span>
+<span class="sd">        - implement generic input processing and validation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">response_field</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1"># Only return this field in the response</span>
+    <span class="n">sync</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1"># If True, make this resource always synchronous</span>
+    <span class="n">audit</span> <span class="o">=</span> <span class="kc">True</span>   <span class="c1"># If False, skip session creation and audit tracking for this resource</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">api</span><span class="p">,</span> <span class="n">route</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BaseResource</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">api</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">route</span> <span class="o">=</span> <span class="n">route</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">endpoint</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">endpoint</span> <span class="o">+</span> <span class="n">route</span>
+
+    <span class="c1"># ###########################</span>
+    <span class="c1"># ### main resource flow ####</span>
+    <span class="c1"># ###########################</span>
+
+<div class="viewcode-block" id="BaseResource.process"><a class="viewcode-back" href="../../api/smapy.resource.html#smapy.resource.BaseResource.process">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The actual resource code should be implemented here by subclasses.&quot;&quot;&quot;</span></div>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_is_sync</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;sync&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">get_bool</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="s1">&#39;sync&#39;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">cls</span><span class="o">.</span><span class="n">sync</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">sync</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;api&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sync&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">start_session</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">sync</span><span class="p">):</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;RUNNING&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;alive&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;sync&#39;</span><span class="p">:</span> <span class="n">sync</span><span class="p">,</span>
+            <span class="s1">&#39;resource&#39;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s1">&#39;in_ts&#39;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;in_ts&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;body&#39;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">,</span>
+            <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
+            <span class="s1">&#39;pid&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">(),</span>
+            <span class="s1">&#39;host&#39;</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">(),</span>
+            <span class="s1">&#39;env&#39;</span><span class="p">:</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">k</span><span class="p">}</span>
+        <span class="p">}</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mongodb</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;internal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;sync&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sync</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting new session </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">sync</span>
+
+    <span class="k">def</span> <span class="nf">end_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;OK&#39;</span><span class="p">):</span>
+        <span class="n">in_ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;in_ts&#39;</span><span class="p">]</span>
+        <span class="n">out_ts</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;out_ts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">out_ts</span>
+        <span class="n">elapsed</span> <span class="o">=</span> <span class="n">get_ms</span><span class="p">(</span><span class="n">out_ts</span> <span class="o">-</span> <span class="n">in_ts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;elapsed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">elapsed</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;internal&#39;</span><span class="p">]:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
+            <span class="p">}</span>
+            <span class="n">elapsed</span> <span class="o">=</span> <span class="n">get_ms</span><span class="p">(</span><span class="n">out_ts</span> <span class="o">-</span> <span class="n">in_ts</span><span class="p">)</span>
+            <span class="n">update</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s1">&#39;out_ts&#39;</span><span class="p">:</span> <span class="n">out_ts</span><span class="p">,</span>
+                    <span class="s1">&#39;elapsed&#39;</span><span class="p">:</span> <span class="n">elapsed</span><span class="p">,</span>
+                    <span class="s1">&#39;response&#39;</span><span class="p">:</span> <span class="n">response</span><span class="p">,</span>
+                    <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="n">status</span><span class="p">,</span>
+                    <span class="s1">&#39;alive&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mongodb</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">match</span><span class="p">,</span> <span class="n">update</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Ending session </span><span class="si">%s</span><span class="s2">. Status: </span><span class="si">%s</span><span class="s2">, Elapsed: </span><span class="si">%s</span><span class="s2">ms&quot;</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">elapsed</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BaseResource.run_local"><a class="viewcode-back" href="../../api/smapy.resource.html#smapy.resource.BaseResource.run_local">[docs]</a>    <span class="k">def</span> <span class="nf">run_local</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">message</span><span class="p">)</span> <span class="ow">or</span> <span class="n">message</span>
+        <span class="k">if</span> <span class="n">response</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_field</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response_field</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span></div>
+
+    <span class="k">def</span> <span class="nf">_run_public</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;OK&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_local</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Caught an uncontrolled Exception&quot;</span><span class="p">)</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;EXCEPTION&#39;</span>
+            <span class="n">exception</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">ex</span><span class="p">),</span>
+            <span class="n">tb</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="n">status</span><span class="p">,</span>
+                <span class="s1">&#39;exception&#39;</span><span class="p">:</span> <span class="n">exception</span><span class="p">,</span>
+                <span class="s1">&#39;traceback&#39;</span><span class="p">:</span> <span class="n">tb</span>
+            <span class="p">}</span>
+            <span class="k">raise</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTPInternalServerError</span><span class="p">(</span><span class="s2">&quot;Uncontrolled Exception&quot;</span><span class="p">,</span> <span class="n">tb</span><span class="p">)</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">audit</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">end_session</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">run_public</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
+        <span class="n">sync</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_sync</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;sync&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sync</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;audit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">audit</span>
+
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">audit</span><span class="p">:</span>
+            <span class="n">sync</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">start_session</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">sync</span><span class="p">)</span>
+
+        <span class="n">resource</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sync</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">resource</span><span class="o">.</span><span class="n">_run_public</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">gevent</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">_run_public</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">on_get</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">run_public</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">on_post</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">run_public</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+
+    <span class="c1"># ##########################</span>
+    <span class="c1"># ### running runnables ####</span>
+    <span class="c1"># ##########################</span>
+
+    <span class="k">def</span> <span class="nf">_get_runnable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runnable</span><span class="p">):</span>
+        <span class="n">runnable_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">runnables</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">runnable</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">runnable_class</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTPInternalServerError</span><span class="p">(</span>
+                <span class="s1">&#39;Invalid Runnable&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Runnable </span><span class="si">{}</span><span class="s1"> not found in registry&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">runnable</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">runnable_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_is_many</span><span class="p">(</span><span class="n">messages</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">GeneratorType</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">_run_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runnable</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">concurrency</span><span class="p">,</span> <span class="n">remote</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Run a single runnable on a single or many messages.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_many</span><span class="p">(</span><span class="n">messages</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">concurrency</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Skip gevent usage</span>
+                <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">:</span>
+                    <span class="n">runnable_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_runnable</span><span class="p">(</span><span class="n">runnable</span><span class="p">)</span>
+                    <span class="n">runnable_</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">remote</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># run the same runnable on many messages concurrently</span>
+                <span class="n">pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="n">concurrency</span><span class="p">)</span>
+                <span class="n">greenlets</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">:</span>
+                    <span class="n">runnable_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_runnable</span><span class="p">(</span><span class="n">runnable</span><span class="p">)</span>
+                    <span class="n">greenlet</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">runnable_</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">remote</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
+                    <span class="n">greenlets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">greenlet</span><span class="p">)</span>
+
+                <span class="n">gevent</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">greenlets</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># messages is actually a single message, so skip the gevent part</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="n">messages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="n">messages</span>
+
+            <span class="n">runnable_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_runnable</span><span class="p">(</span><span class="n">runnable</span><span class="p">)</span>
+            <span class="n">runnable_</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">remote</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_run_many</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runnables</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">concurrency</span><span class="p">,</span> <span class="n">remote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Run many runnables on a single or many messages.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="c1"># each message corresponds to a single runnable, so we validate the list lengths</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">runnables</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTPInternalServerError</span><span class="p">(</span>
+                    <span class="s1">&#39;Invalid Arguments&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;messages and runnables lists should have the same length&#39;</span>
+                <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># We convert the message into a list of messages, to make</span>
+            <span class="c1"># the next block of code behave in a uniform way</span>
+            <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span><span class="n">messages</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">runnables</span><span class="p">)</span>
+
+        <span class="n">pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="n">concurrency</span><span class="p">)</span>
+        <span class="n">greenlets</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">runnable</span><span class="p">,</span> <span class="n">message</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">runnables</span><span class="p">,</span> <span class="n">messages</span><span class="p">):</span>
+            <span class="n">greenlet</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_one</span><span class="p">,</span> <span class="n">runnable</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">remote</span><span class="p">)</span>
+            <span class="n">greenlets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">greenlet</span><span class="p">)</span>
+
+        <span class="n">gevent</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">greenlets</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">invoke</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runnable</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">concurrency</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">remote</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">concurrency</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">concurrency</span><span class="p">)</span> <span class="k">if</span> <span class="n">concurrency</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;api&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;concurrency&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">runnable</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">callback</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Callback functions work only on single runnables&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run_many</span><span class="p">(</span><span class="n">runnable</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">concurrency</span><span class="p">,</span> <span class="n">remote</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run_one</span><span class="p">(</span><span class="n">runnable</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">concurrency</span><span class="p">,</span> <span class="n">remote</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Carles Sala
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
