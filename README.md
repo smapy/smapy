@@ -124,4 +124,3 @@ $ curl localhost:8001/report?session=5aef67a6ab17857c2d81a6ea
     "status": "200 OK"
 }
 ```
-

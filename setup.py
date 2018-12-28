@@ -19,21 +19,31 @@ install_requires = [
 ]
 
 tests_require = [
-    'mock>=2.0.0',
+    'coverage>=4.5.1',
     'pytest>=3.4.2',
+    'pytest-cov>=2.6.0',
 ]
 
 development_requires = [
-    'autoflake>=1.1',
-    'autopep8>=1.3.5',
+    # general
     'bumpversion>=0.5.3',
-    'coverage>=4.5.1',
+    'pip>=9.0.1',
+    'watchdog>=0.8.3',
+
+    # docs
+    'm2r>=0.2.0',
+    'Sphinx>=1.7.1',
+    'sphinx_rtd_theme>=0.2.4',
+
+    # style check
     'flake8>=3.5.0',
     'isort>=4.3.4',
-    'pip>=9.0.1',
-    'pycodestyle==2.3.1',
-    'pyflakes==1.6.0',
-    'tox>=2.9.1',
+
+    # fix style issues
+    'autoflake>=1.1',
+    'autopep8>=1.3.5',
+
+    # distribute on PyPI
     'twine>=1.10.0',
     'wheel>=0.30.0',
 ]
@@ -43,7 +53,7 @@ setup_requires = [
 ]
 
 setup(
-    author='Carles Sala Cladellas',
+    author='Carles Sala',
     author_email='carles@pythiac.com',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
@@ -51,8 +61,10 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
     description="Simple Modular API written in Python.",
     extras_require={
@@ -67,6 +79,7 @@ setup(
     long_description_content_type='text/markdown',
     name='smapy',
     packages=find_packages(include=['smapy*']),
+    python_requires='>=3.4',
     setup_requires=setup_requires,
     test_suite='tests',
     tests_require=tests_require,

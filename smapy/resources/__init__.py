@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from smapy.utils import find_submodules
 
 modules = find_submodules(__name__)

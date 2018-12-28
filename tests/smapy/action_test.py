@@ -73,7 +73,7 @@ class TestBaseAction(TestCase):
         # Asserts
         exception = [
             'Traceback (most recent call last):\n',
-            '  File "{}smapy/action.py", line 61, in run_local\n'
+            '  File "{}smapy/action.py", line 63, in run_local\n'
             '    self.process(message)\n'.format(project_dir),
             '  File "{}tests/smapy/action_test.py", line 53, in process\n'
             '    raise Exception("An Exception")\n'.format(project_dir),
@@ -121,7 +121,7 @@ class TestBaseAction(TestCase):
         # Asserts
         exception = [
             'Traceback (most recent call last):\n',
-            '  File "{}smapy/action.py", line 61, in run_local\n'
+            '  File "{}smapy/action.py", line 63, in run_local\n'
             '    self.process(message)\n'.format(project_dir),
             '  File "{}tests/smapy/action_test.py", line 101, in process\n'
             '    raise SystemExit()\n'.format(project_dir),
