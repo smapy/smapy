@@ -1,17 +1,20 @@
 [![PyPi][pypi-img]][pypi-url]
 [![TravisCI][travis-img]][travis-url]
+[![CodeCov][codecov-img]][codecov-url]
 
 [travis-img]: https://travis-ci.org/csala/smapy.svg?branch=master
 [travis-url]: https://travis-ci.org/csala/smapy
 [pypi-img]: https://img.shields.io/pypi/v/smapy.svg
 [pypi-url]: https://pypi.python.org/pypi/smapy
-
+[codecov-img]: https://codecov.io/gh/csala/smapy/branch/master/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/csala/smapy
 
 # Smapy
 
-Simple Modular APIs in Python.
+Simple Modular APIs written in Python.
 
 - Free software: MIT license
+* Documentation: https://csala.github.io/smapy
 
 ## Install
 
