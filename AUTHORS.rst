@@ -2,7 +2,12 @@
 Credits
 =======
 
+Development Lead
+----------------
+
+* Carles Sala <carles@pythiac.com>
+
 Contributors
 ------------
 
-* Carles Sala <carles@pythiac.com>
+None yet. Why not be the first?
