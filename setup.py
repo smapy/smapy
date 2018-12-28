@@ -19,7 +19,6 @@ install_requires = [
 ]
 
 tests_require = [
-    'coverage>=4.5.1',
     'pytest>=3.4.2',
     'pytest-cov>=2.6.0',
 ]
@@ -40,12 +39,16 @@ development_requires = [
     'isort>=4.3.4',
 
     # fix style issues
-    'autoflake>=1.1',
-    'autopep8>=1.3.5',
+    'autoflake>=1.2',  # keep this after flake8 to avoid
+    'autopep8>=1.3.5', # version incompatibilities with flake8
 
     # distribute on PyPI
     'twine>=1.10.0',
     'wheel>=0.30.0',
+
+    # Advanced testing
+    'tox>=2.9.1',
+    'coverage>=4.5.1',
 ]
 
 setup_requires = [
