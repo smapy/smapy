@@ -14,7 +14,7 @@
 Simple Modular APIs written in Python.
 
 - Free software: MIT license
-* Documentation: https://csala.github.io/smapy
+- Documentation: https://csala.github.io/smapy
 
 ## Install
 
