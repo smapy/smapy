@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import os
-import sys
 
 from gunicorn.app.base import BaseApplication
 
 from smapy.logging_utils import logging_setup
-from smapy.utils import setenv, read_conf
+from smapy.utils import read_conf, setenv
 
 
 class SmapyApplication(BaseApplication):
