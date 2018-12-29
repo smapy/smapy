@@ -123,9 +123,13 @@ class SumDictsTest(TestCase):
 
 
 class ReadConfTest(TestCase):
-    def test_illegal_arg_type(self):
-        s = None
-        self.assertRaises(TypeError, utils.read_conf, s)
+
+    def test_no_conf_file(self):
+        # run
+        conf = utils.read_conf(None)
+
+        # assert
+        self.assertEqual(conf, dict())
 
     def test_illegal_filename(self):
         s = '/i_dont_exists/at_all.csv'

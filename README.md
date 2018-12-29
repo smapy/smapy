@@ -16,21 +16,49 @@ Simple Modular APIs written in Python.
 - Free software: MIT license
 - Documentation: https://csala.github.io/smapy
 
-## Install
+## Overview
 
-```
+**Smapy** is a framework built on top of [Falcon](https://falconframework.org) and
+[gunicorn](https://gunicorn.org/), which allows building modular, distributed and
+asynchronous-capable service oriented Web APIs writing as little Python code as possible.
+
+## Installation
+
+The simplest and recommended way to install **Smapy** is using `pip`:
+
+```bash
 pip install smapy
 ```
 
-## Example
+Alternatively, clone the repository and install it from source running the `make install` command.
 
-To run the example, simple execute `example.sh` on a terminal
-
+```bash
+git clone git@github.com:csala/smapy.git
+cd smapy
+make install
 ```
-./example.sh
+
+For development, you can use the `make install-develop` command instead in order to install all
+the required dependencies for testing and code linting.
+
+## Getting Started
+
+All you need to start a **Smapy** application is to execute the `smapy` command line utility:
+
+```bash
+$ smapy
+[2018-12-29 21:53:03 +0100] [25213] [INFO] Starting gunicorn 19.9.0
+[2018-12-29 21:53:03 +0100] [25213] [INFO] Listening at: http://127.0.0.1:8001 (25213)
+[2018-12-29 21:53:03 +0100] [25213] [INFO] Using worker: gevent
+[2018-12-29 21:53:03 +0100] [25216] [INFO] Booting worker with pid: 25216
+2018-12-29 21:53:03,304 - 25216 - INFO - None - application - Initializing the API
+2018-12-29 21:53:03,307 - 25216 - INFO - None - api - Adding new runnable hello.World
+2018-12-29 21:53:03,307 - 25216 - INFO - None - api - Adding new runnable misc.MultiProcess
+2018-12-29 21:53:03,307 - 25216 - INFO - None - api - Adding new runnable misc.Report
+2018-12-29 21:53:03,308 - 25216 - INFO - None - api - Adding new runnable misc.HelloWorld
 ```
 
-After that, you can start playing with it:
+After that, you can start playing with it through HTTP requests:
 
 ```
 $ curl localhost:8001/hello

@@ -61,8 +61,10 @@ class API(falcon.API):
         if actions_prefix:
             runnable = actions_prefix + '.' + runnable
 
-        package, name = runnable.rsplit('.', 1)
-        return getattr(importlib.import_module(package), name, None)
+        return import_object(runnable)
+
+        # package, name = runnable.rsplit('.', 1)
+        # return getattr(importlib.import_module(package), name, None)
 
     def _add_runnable(self, runnable, **kwargs):
         if runnable.name in self.runnables:
@@ -89,25 +91,28 @@ class API(falcon.API):
             if self._is_action(obj, module):
                 self._add_runnable(obj)
 
-    def load_actions(self, package):
-        for module in find_submodules(package):
-            self._load_actions(module)
+    def load_actions(self, module):
+        if isinstance(module, str):
+            module = importlib.import_module(module)
+
+        self._load_actions(module)
+        for submodule in find_submodules(module):
+            self.load_actions(submodule)
 
     def add_resource(self, route, resource_class, **kwargs):
         self._add_runnable(resource_class, route=route, **kwargs)
         self.add_route(route, resource_class)
 
     def _get_mongodb(self, conf):
-        host = conf['host']
-        port = int(conf['port'])
-        database = conf['database']
+        host = conf.get('host', '127.0.0.1')
+        port = conf.get('port', 27017)
+        database = conf.get('database', 'smapy')
 
         client = MongoClient(host=host, port=port, connect=False)
         return client[database]
 
     def _set_mongodb_up(self, conf):
-        mongo_conf = conf['mongodb']
-        self.mongodb = self._get_mongodb(mongo_conf)
+        self.mongodb = self._get_mongodb(conf['mongodb'])
 
         audit_conf = conf.get('audit')
         if audit_conf:
@@ -116,10 +121,15 @@ class API(falcon.API):
         else:
             self.auditdb = self.mongodb
 
-    def _load_resources(self, prefix=''):
+    def _load_default_resources(self, prefix=''):
         self.add_resource(prefix + '/multi_process', resources.misc.MultiProcess)
         self.add_resource(prefix + '/report', resources.misc.Report)
         self.add_resource(prefix + '/hello_world', resources.misc.HelloWorld)
+
+    def _load_resources(self, conf):
+        for resource_name, route in conf.items():
+            resource = import_object(resource_name)
+            self.add_resource(route, resource)
 
     def __init__(self, conf):
         self.conf = conf
@@ -140,9 +150,17 @@ class API(falcon.API):
         self.add_route(RemoteRunnable.route, RemoteRunnable)
 
         self.runnables = dict()
-        self.load_actions('smapy.actions')
+        if conf['api'].get('default_actions', True):
+            self.load_actions('smapy.actions')
 
-        default_resources = conf['api'].get('default_resources', True)
-        if default_resources:
+        actions_module = conf['api'].get('actions_module')
+        if actions_module:
+            self.load_actions(actions_module)
+
+        if conf['api'].get('default_resources', True):
             prefix = conf['api'].get('default_resources_prefix', '')
-            self._load_resources(prefix)
+            self._load_default_resources(prefix)
+
+        resources = conf.get('resources')
+        if resources:
+            self._load_resources(conf.get('resources', dict()))

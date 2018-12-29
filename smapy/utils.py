@@ -21,15 +21,21 @@ def find_subclasses(parent_class, recursive=False):
     return subclasses
 
 
+def recursivedict():
+    return defaultdict(recursivedict)
+
+
 def read_conf(conf_file):
     conf = configparser.ConfigParser(interpolation=None)
+    conf.optionxform = str    # Prevent lowercase keys
 
-    if not os.path.isfile(conf_file):
-        raise FileNotFoundError("File {} not found".format(conf_file))
+    if conf_file:
+        if not os.path.isfile(conf_file):
+            raise FileNotFoundError("File {} not found".format(conf_file))
 
-    conf.read(conf_file)
+        conf.read(conf_file)
 
-    conf_dict = defaultdict(lambda: defaultdict(lambda: None))
+    conf_dict = recursivedict()
 
     for section, params in conf.items():
         for key, value in params.items():
@@ -126,9 +132,12 @@ def find_submodules(package):
         package = importlib.import_module(package)
 
     submodules = list()
-    for _, name, __ in pkgutil.iter_modules(package.__path__):
-        full_name = package.__name__ + '.' + name
-        module = importlib.import_module(full_name)
-        submodules.append(module)
+
+    # Otherwise it is not a package but a module
+    if hasattr(package, '__path__'):
+        for _, name, __ in pkgutil.iter_modules(package.__path__):
+            full_name = package.__name__ + '.' + name
+            module = importlib.import_module(full_name)
+            submodules.append(module)
 
     return submodules

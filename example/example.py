@@ -4,7 +4,7 @@ import logging
 import os
 
 from smapy import API
-from smapy.logging import logging_setup
+from smapy.logging_utils import logging_setup
 from smapy.utils import setenv, read_conf
 
 LOGGER = logging.getLogger(__name__)

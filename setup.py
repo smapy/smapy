@@ -70,6 +70,11 @@ setup(
         'Programming Language :: Python :: 3.7',
     ],
     description="Simple Modular API written in Python.",
+    entry_points = {
+        'console_scripts': [
+            'smapy=smapy.cli:main'
+        ],
+    },
     extras_require={
         'test': tests_require,
         'dev': tests_require + development_requires,
