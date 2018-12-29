@@ -3,6 +3,7 @@
 import logging
 import os
 
+from smapy import API, resources
 from smapy.logging import SessionFilter
 from smapy.utils import setenv, read_conf
 
@@ -57,12 +58,7 @@ def get_app(api_conf):
 
     logging.getLogger().info("Initializing the API")
 
-    # Import actions and resources here to make sure that the
-    # environment is already configured
-    from smapy import API, actions, resources
     api = API(conf)
-
-    api.load_actions(actions.modules)
 
     # Misc
     api.add_resource("/multi_process", resources.misc.MultiProcess)

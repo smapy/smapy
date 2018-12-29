@@ -156,13 +156,7 @@ class BaseResource(Runnable):
     # ##########################
 
     def _get_runnable(self, runnable):
-        runnable_class = self.api.runnables.get(runnable)
-        if not runnable_class:
-            raise falcon.HTTPInternalServerError(
-                'Invalid Runnable',
-                'Runnable {} not found in registry'.format(runnable)
-            )
-
+        runnable_class = self.api.get_runnable(runnable)
         return runnable_class(self.request)
 
     @staticmethod

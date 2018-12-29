@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
+
 from unittest import TestCase
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import Mock, call, patch
 
 import falcon
 from bson import ObjectId
@@ -10,7 +12,7 @@ from smapy.resource import BaseResource
 class TestBaseResource(TestCase):
 
     def setUp(self):
-        self.api = MagicMock(endpoint='http://host:port')
+        self.api = Mock(endpoint='http://host:port')
 
     # #######################
     # init(cls, api, rouce) #
@@ -25,7 +27,7 @@ class TestBaseResource(TestCase):
             def process(self, message):
                 pass
 
-        api = MagicMock()
+        api = Mock()
         api.endpoint = 'http://an_endpoint'
         route = '/a_route'
         TestResource.init(api, route)
@@ -49,12 +51,12 @@ class TestBaseResource(TestCase):
             def process(self, message):
                 return {'a': 'response'}
 
-        api = MagicMock()
+        api = Mock()
         api.endpoint = 'http://an_endpoint'
         TestResource.init(api, 'a_route')
 
         session = ObjectId('57b599f8ab1785652bb879a7')
-        a_request = MagicMock(context={'session': session})
+        a_request = Mock(context={'session': session})
         test_resource = TestResource(a_request)
 
         response = test_resource.run_local({'a': 'message'})
@@ -70,12 +72,12 @@ class TestBaseResource(TestCase):
             def process(self, message):
                 return {'a': 'response'}
 
-        api = MagicMock()
+        api = Mock()
         api.endpoint = 'http://an_endpoint'
         TestResource.init(api, 'a_route')
 
         session = ObjectId('57b599f8ab1785652bb879a7')
-        a_request = MagicMock(context={'session': session})
+        a_request = Mock(context={'session': session})
         test_resource = TestResource(a_request)
 
         response = test_resource.run_local({})
@@ -91,12 +93,12 @@ class TestBaseResource(TestCase):
             def process(self, message):
                 message['a'] = 'response'
 
-        api = MagicMock()
+        api = Mock()
         api.endpoint = 'http://an_endpoint'
         TestResource.init(api, 'a_route')
 
         session = ObjectId('57b599f8ab1785652bb879a7')
-        a_request = MagicMock(context={'session': session})
+        a_request = Mock(context={'session': session})
         test_resource = TestResource(a_request)
 
         response = test_resource.run_local({})
@@ -115,8 +117,8 @@ class TestBaseResource(TestCase):
     #            return message
 
     #    session = ObjectId('57b599f8ab1785652bb879a7')
-    #    request = MagicMock(params={'some': 'params'}, context={'session': session})
-    #    response = MagicMock()
+    #    request = Mock(params={'some': 'params'}, context={'session': session})
+    #    response = Mock()
     #    TestResource.on_get(request, response)
 
     #    self.assertEqual({'some': 'params'}, response.body)
@@ -134,8 +136,8 @@ class TestBaseResource(TestCase):
     #            return message
 
     #    session = ObjectId('57b599f8ab1785652bb879a7')
-    #    request = MagicMock(body={'some': 'params'}, context={'session': session})
-    #    response = MagicMock()
+    #    request = Mock(body={'some': 'params'}, context={'session': session})
+    #    response = Mock()
     #    TestResource.on_post(request, response)
 
     #    self.assertEqual({'some': 'params'}, response.body)
@@ -146,58 +148,12 @@ class TestBaseResource(TestCase):
     def test__get_runnable_success(self):
         """If runnable exists, return a new instance."""
 
-        class OneResource(BaseResource):
+        resource = Mock()
+        resource._get_runnable = BaseResource._get_runnable.__get__(resource, BaseResource)
 
-            name = 'one_resource'
-
-            def process(self, message):
-                pass
-
-        class AnOtherResource(BaseResource):
-
-            name = 'an_other_resource'
-
-            def process(self, message):
-                pass
-
-        runnables = {
-            'one_resource': OneResource,
-            'an_other_resource': AnOtherResource
-        }
-        api = MagicMock(runnables=runnables)
-        OneResource.init(api, '/one_resource')
-        AnOtherResource.init(api, '/an_other_resource')
-
-        session = ObjectId('57b599f8ab1785652bb879a7')
-        a_request = MagicMock(context={'session': session})
-        one_resource = OneResource(a_request)
-
-        other_runnable = one_resource._get_runnable('an_other_resource')
-
-        self.assertIsInstance(other_runnable, AnOtherResource)
-
-    def test__get_runnable_invalid(self):
-        """If runnable does not exist, raise an exception."""
-
-        class OneResource(BaseResource):
-
-            name = 'one_resource'
-
-            def process(self, message):
-                pass
-
-        runnables = {
-            'one_resource': OneResource,
-        }
-        api = MagicMock(runnables=runnables)
-        OneResource.init(api, '/one_resource')
-
-        session = ObjectId('57b599f8ab1785652bb879a7')
-        a_request = MagicMock(context={'session': session})
-        one_resource = OneResource(a_request)
-
-        with self.assertRaises(falcon.HTTPInternalServerError):
-            one_resource._get_runnable('an_other_resource')
+        resource._get_runnable('a_runnable')
+        resource.api.get_runnable.assert_called_once_with('a_runnable')
+        resource.api.get_runnable.return_value.assert_called_once_with(resource.request)
 
     # ####################
     # _is_many(messages) #
@@ -242,20 +198,20 @@ class TestBaseResource(TestCase):
             def process(self, message):
                 pass
 
-        api = MagicMock()
+        api = Mock()
         api.endpoint = 'http://an_endpoint'
         OneResource.init(api, 'one_route')
         OtherResource.init(api, 'other_route')
 
         session = ObjectId('57b599f8ab1785652bb879a7')
-        a_request = MagicMock(context={'session': session})
+        a_request = Mock(context={'session': session})
         one_resource = OneResource(a_request)
         other_resource = OtherResource(a_request)
 
-        one_resource._get_runnable = MagicMock(return_value=other_resource)
-        other_resource.run = MagicMock()
+        one_resource._get_runnable = Mock(return_value=other_resource)
+        other_resource.run = Mock()
 
-        pool_mock = MagicMock()
+        pool_mock = Mock()
         pool_mock.spawn.side_effect = ['g1', 'g2', 'g3']
         pool_class_mock.return_value = pool_mock
 
@@ -295,18 +251,18 @@ class TestBaseResource(TestCase):
             def process(self, message):
                 pass
 
-        api = MagicMock()
+        api = Mock()
         api.endpoint = 'http://an_endpoint'
         OneResource.init(api, 'one_route')
         OtherResource.init(api, 'other_route')
 
         session = ObjectId('57b599f8ab1785652bb879a7')
-        a_request = MagicMock(context={'session': session})
+        a_request = Mock(context={'session': session})
         one_resource = OneResource(a_request)
         other_resource = OtherResource(a_request)
 
-        one_resource._get_runnable = MagicMock(return_value=other_resource)
-        other_resource.run = MagicMock()
+        one_resource._get_runnable = Mock(return_value=other_resource)
+        other_resource.run = Mock()
 
         # Actual call
         one_resource._run_one('other_resource', {}, 1, False)
@@ -329,18 +285,18 @@ class TestBaseResource(TestCase):
             def process(self, message):
                 pass
 
-        api = MagicMock()
+        api = Mock()
         api.endpoint = 'http://an_endpoint'
         OneResource.init(api, 'one_route')
         OtherResource.init(api, 'other_route')
 
         session = ObjectId('57b599f8ab1785652bb879a7')
-        a_request = MagicMock(context={'session': session})
+        a_request = Mock(context={'session': session})
         one_resource = OneResource(a_request)
         other_resource = OtherResource(a_request)
 
-        one_resource._get_runnable = MagicMock(return_value=other_resource)
-        other_resource.run = MagicMock()
+        one_resource._get_runnable = Mock(return_value=other_resource)
+        other_resource.run = Mock()
 
         # Actual call
         one_resource._run_one('other_resource', [{}], 1, False)
@@ -361,12 +317,12 @@ class TestBaseResource(TestCase):
             def process(self, message):
                 pass
 
-        api = MagicMock()
+        api = Mock()
         api.endpoint = 'http://an_endpoint'
         OneResource.init(api, 'one_route')
 
         session = ObjectId('57b599f8ab1785652bb879a7')
-        a_request = MagicMock(context={'session': session})
+        a_request = Mock(context={'session': session})
         one_resource = OneResource(a_request)
 
         runnables = ['runnable_1', 'runnable_2', 'runnable_3']
@@ -399,15 +355,15 @@ class TestBaseResource(TestCase):
             def process(self, message):
                 pass
 
-        api = MagicMock()
+        api = Mock()
         api.endpoint = 'http://an_endpoint'
         OneResource.init(api, 'one_route')
 
         session = ObjectId('57b599f8ab1785652bb879a7')
-        a_request = MagicMock(context={'session': session})
+        a_request = Mock(context={'session': session})
         one_resource = OneResource(a_request)
 
-        pool_mock = MagicMock()
+        pool_mock = Mock()
         pool_mock.spawn.side_effect = ['g1', 'g2', 'g3']
         pool_class_mock.return_value = pool_mock
 
@@ -440,16 +396,16 @@ class TestBaseResource(TestCase):
             def process(self, message):
                 pass
 
-        api = MagicMock()
+        api = Mock()
         api.endpoint = 'http://an_endpoint'
         OneResource.init(api, 'one_route')
 
         session = ObjectId('57b599f8ab1785652bb879a7')
-        a_request = MagicMock(context={'session': session})
+        a_request = Mock(context={'session': session})
         one_resource = OneResource(a_request)
 
-        one_resource._run_many = MagicMock()
-        one_resource._run_one = MagicMock()
+        one_resource._run_many = Mock()
+        one_resource._run_one = Mock()
 
         # Actual call
         runnable = ['runnable_1', 'runnable_2', 'runnable_3']
@@ -469,16 +425,16 @@ class TestBaseResource(TestCase):
             def process(self, message):
                 pass
 
-        api = MagicMock()
+        api = Mock()
         api.endpoint = 'http://an_endpoint'
         OneResource.init(api, 'one_route')
 
         session = ObjectId('57b599f8ab1785652bb879a7')
-        a_request = MagicMock(context={'session': session})
+        a_request = Mock(context={'session': session})
         one_resource = OneResource(a_request)
 
-        one_resource._run_many = MagicMock()
-        one_resource._run_one = MagicMock()
+        one_resource._run_many = Mock()
+        one_resource._run_one = Mock()
 
         # Actual call
         runnable = 'a_runnable'

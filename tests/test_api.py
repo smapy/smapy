@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import traceback
 from importlib import reload
 from unittest import TestCase
@@ -165,7 +167,6 @@ class TestAPI(TestCase):
         api_.load_actions(modules)
 
         # Asserts
-        action.init.assert_called_once_with(api_)
         api_._add_runnable.assert_called_once_with(action)
 
     # #####################################################
@@ -176,21 +177,14 @@ class TestAPI(TestCase):
 
         # Set up
         resource = Mock()
-
-        # Override __init__
-        api.API.__init__ = lambda x: None
-        api_ = api.API()
-
-        # Mock _add_runnable and add_route
-        api_._add_runnable = Mock()
-        api_.add_route = Mock()
+        api_ = Mock()
+        api_.add_resource = api.API.add_resource.__get__(api_, api.API)
 
         # Actual call
         api_.add_resource('a_route', resource, keyword='argument')
 
         # Asserts
-        resource.init.assert_called_once_with(api_, 'a_route', keyword='argument')
-        api_._add_runnable.assert_called_once_with(resource)
+        api_._add_runnable.assert_called_once_with(resource, route='a_route', keyword='argument')
         api_.add_route.assert_called_once_with('a_route', resource)
 
     # #############################

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from unittest import TestCase
 from unittest.mock import MagicMock
 
@@ -75,7 +77,7 @@ class TestBaseAction(TestCase):
             'Traceback (most recent call last):\n',
             '  File "{}smapy/action.py", line 63, in run_local\n'
             '    self.process(message)\n'.format(project_dir),
-            '  File "{}tests/test_action.py", line 53, in process\n'
+            '  File "{}tests/test_action.py", line 55, in process\n'
             '    raise Exception("An Exception")\n'.format(project_dir),
             'Exception: An Exception\n'
         ]
@@ -123,7 +125,7 @@ class TestBaseAction(TestCase):
             'Traceback (most recent call last):\n',
             '  File "{}smapy/action.py", line 63, in run_local\n'
             '    self.process(message)\n'.format(project_dir),
-            '  File "{}tests/test_action.py", line 101, in process\n'
+            '  File "{}tests/test_action.py", line 103, in process\n'
             '    raise SystemExit()\n'.format(project_dir),
             'SystemExit\n'
         ]
