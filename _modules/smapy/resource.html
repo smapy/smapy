@@ -314,13 +314,7 @@
     <span class="c1"># ##########################</span>
 
     <span class="k">def</span> <span class="nf">_get_runnable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runnable</span><span class="p">):</span>
-        <span class="n">runnable_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">runnables</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">runnable</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">runnable_class</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTPInternalServerError</span><span class="p">(</span>
-                <span class="s1">&#39;Invalid Runnable&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;Runnable </span><span class="si">{}</span><span class="s1"> not found in registry&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">runnable</span><span class="p">)</span>
-            <span class="p">)</span>
-
+        <span class="n">runnable_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">get_runnable</span><span class="p">(</span><span class="n">runnable</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">runnable_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
