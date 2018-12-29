@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import importlib
 import logging
 import traceback
 
@@ -32,6 +33,12 @@ def unknown_exception_serializer(ex, req, resp, params):
     )
 
 
+def import_object(object_name):
+    """Import an object from its Fully Qualified Name."""
+    package, name = object_name.rsplit('.', 1)
+    return getattr(importlib.import_module(package), name)
+
+
 class API(falcon.API):
 
     @staticmethod
@@ -47,26 +54,45 @@ class API(falcon.API):
         else:
             return issubclass(obj, BaseAction)
 
-    def _add_runnable(self, runnable):
+    def import_runnable(self, runnable):
+        actions_prefix = self.conf['api'].get('actions_prefix')
+        if actions_prefix:
+            runnable = actions_prefix + '.' + runnable
+
+        package, name = runnable.rsplit('.', 1)
+        return getattr(importlib.import_module(package), name, None)
+
+    def _add_runnable(self, runnable, **kwargs):
         if runnable.name in self.runnables:
             raise ValueError("Duplicated runnable name: {}".format(runnable.name))
 
+        LOGGER.info("Adding new runnable %s", runnable.name)
+        runnable.init(self, **kwargs)
         self.runnables[runnable.name] = runnable
 
-    def _load_action(self, module):
+    def get_runnable(self, runnable):
+        runnable_class = self.runnables.get(runnable)
+        if not runnable_class:
+            runnable_class = self.import_runnable(runnable)
+            self._add_runnable(runnable_class)
+
+        if not runnable_class:
+            raise falcon.HTTPInternalServerError('Invalid Runnable: {}'.format(runnable))
+
+        return runnable_class
+
+    def _load_actions(self, module):
         for attr in dir(module):
             obj = getattr(module, attr)
             if self._is_action(obj, module):
-                obj.init(self)
                 self._add_runnable(obj)
 
     def load_actions(self, modules):
         for module in modules.values():
-            self._load_action(module)
+            self._load_actions(module)
 
     def add_resource(self, route, resource_class, **kwargs):
-        resource_class.init(self, route, **kwargs)
-        self._add_runnable(resource_class)
+        self._add_runnable(resource_class, route=route, **kwargs)
         self.add_route(route, resource_class)
 
     def _get_mongodb(self, conf):
