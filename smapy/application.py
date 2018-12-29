@@ -19,6 +19,7 @@ class SmapyApplication(BaseApplication):
 
         # Force some values
         api_config = config['api']
+        api_config.setdefault('workers', 1)
         api_config['worker_class'] = 'gevent'
         api_config.setdefault('bind', '127.0.0.1:8001')
         if not api_config.get('endpoint'):
@@ -38,12 +39,7 @@ class SmapyApplication(BaseApplication):
     def load(self):
         from smapy.api import API
 
-        logging_setup(self.config.get('logging'))
+        logging_setup(self.config['logging'])
         logging.getLogger(__name__).info("Initializing the API")
 
         return API(self.config)
-
-
-if __name__ == '__main__':
-    config_file = sys.argv[1]
-    SmapyApplication(config_file).run()

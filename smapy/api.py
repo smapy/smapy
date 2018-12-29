@@ -104,16 +104,15 @@ class API(falcon.API):
         self.add_route(route, resource_class)
 
     def _get_mongodb(self, conf):
-        host = conf['host']
-        port = int(conf['port'])
-        database = conf['database']
+        host = conf.get('host', '127.0.0.1')
+        port = conf.get('port', 27017)
+        database = conf.get('database', 'smapy')
 
         client = MongoClient(host=host, port=port, connect=False)
         return client[database]
 
     def _set_mongodb_up(self, conf):
-        mongo_conf = conf['mongodb']
-        self.mongodb = self._get_mongodb(mongo_conf)
+        self.mongodb = self._get_mongodb(conf['mongodb'])
 
         audit_conf = conf.get('audit')
         if audit_conf:

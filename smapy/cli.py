@@ -8,7 +8,7 @@ from smapy.application import SmapyApplication
 
 def main():
     parser = argparse.ArgumentParser(description='Smapy CLI')
-    parser.add_argument('config_file', help='Path to the config file')
+    parser.add_argument('config_file', nargs='?', help='Path to the config file')
 
     args = parser.parse_args()
 

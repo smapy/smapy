@@ -21,16 +21,21 @@ def find_subclasses(parent_class, recursive=False):
     return subclasses
 
 
+def recursivedict():
+    return defaultdict(recursivedict)
+
+
 def read_conf(conf_file):
     conf = configparser.ConfigParser(interpolation=None)
     conf.optionxform = str    # Prevent lowercase keys
 
-    if not os.path.isfile(conf_file):
-        raise FileNotFoundError("File {} not found".format(conf_file))
+    if conf_file:
+        if not os.path.isfile(conf_file):
+            raise FileNotFoundError("File {} not found".format(conf_file))
 
-    conf.read(conf_file)
+        conf.read(conf_file)
 
-    conf_dict = defaultdict(lambda: defaultdict(lambda: None))
+    conf_dict = recursivedict()
 
     for section, params in conf.items():
         for key, value in params.items():
