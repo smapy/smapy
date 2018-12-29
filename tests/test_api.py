@@ -142,7 +142,8 @@ class TestAPI(TestCase):
     # #############################
     # load_actions(self, modules) #
     # #############################
-    def test_load_actions(self):
+    @patch('smapy.api.find_submodules')
+    def test_load_actions(self, find_submodules_mock):
         """If a module attribute is an action, add it."""
 
         # Set up
@@ -150,7 +151,7 @@ class TestAPI(TestCase):
         action = Mock()
         module.an_action = action
 
-        modules = {'a_module': module}
+        find_submodules_mock.return_value = [module]
 
         # Override __init__
         api.API.__init__ = lambda x: None
@@ -164,9 +165,10 @@ class TestAPI(TestCase):
         api_._add_runnable = Mock()
 
         # Actual call
-        api_.load_actions(modules)
+        api_.load_actions('a.package')
 
         # Asserts
+        find_submodules_mock.assert_called_once_with('a.package')
         api_._add_runnable.assert_called_once_with(action)
 
     # #####################################################
@@ -311,4 +313,7 @@ class TestAPI(TestCase):
         remote_runnable_mock.init.assert_called_once_with(api_)
         api_.add_route.assert_called_once_with(remote_runnable_mock.route, remote_runnable_mock)
 
-        self.assertEqual(dict(), api_.runnables)
+        runnables = {
+            'hello.World': hello.World
+        }
+        self.assertEqual(runnables, api_.runnables)

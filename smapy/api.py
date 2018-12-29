@@ -11,6 +11,7 @@ from smapy import resources
 from smapy.action import BaseAction
 from smapy.middleware import JSONSerializer, ResponseBuilder
 from smapy.runnable import RemoteRunnable
+from smapy.utils import find_submodules
 
 LOGGER = logging.getLogger(__name__)
 
@@ -88,8 +89,8 @@ class API(falcon.API):
             if self._is_action(obj, module):
                 self._add_runnable(obj)
 
-    def load_actions(self, modules):
-        for module in modules.values():
+    def load_actions(self, package):
+        for module in find_submodules(package):
             self._load_actions(module)
 
     def add_resource(self, route, resource_class, **kwargs):
@@ -139,6 +140,8 @@ class API(falcon.API):
         self.add_route(RemoteRunnable.route, RemoteRunnable)
 
         self.runnables = dict()
+        self.load_actions('smapy.actions')
+
         default_resources = conf['api'].get('default_resources', True)
         if default_resources:
             prefix = conf['api'].get('default_resources_prefix', '')

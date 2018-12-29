@@ -125,10 +125,10 @@ def find_submodules(package):
     if isinstance(package, str):
         package = importlib.import_module(package)
 
-    submodules = dict()
+    submodules = list()
     for _, name, __ in pkgutil.iter_modules(package.__path__):
         full_name = package.__name__ + '.' + name
         module = importlib.import_module(full_name)
-        submodules[name] = module
+        submodules.append(module)
 
     return submodules
