@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd $(dirname $0)
+
 WORKERS=${1:-1}
 
 gunicorn "example:get_app('example.ini')" \

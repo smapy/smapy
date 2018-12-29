@@ -7,6 +7,7 @@ import traceback
 import falcon
 from pymongo import MongoClient
 
+from smapy import resources
 from smapy.action import BaseAction
 from smapy.middleware import JSONSerializer, ResponseBuilder
 from smapy.runnable import RemoteRunnable
@@ -114,6 +115,11 @@ class API(falcon.API):
         else:
             self.auditdb = self.mongodb
 
+    def _load_resources(self, prefix=''):
+        self.add_resource(prefix + '/multi_process', resources.misc.MultiProcess)
+        self.add_resource(prefix + '/report', resources.misc.Report)
+        self.add_resource(prefix + '/hello_world', resources.misc.HelloWorld)
+
     def __init__(self, conf):
         self.conf = conf
         self._set_mongodb_up(conf)
@@ -133,3 +139,7 @@ class API(falcon.API):
         self.add_route(RemoteRunnable.route, RemoteRunnable)
 
         self.runnables = dict()
+        default_resources = conf['api'].get('default_resources', True)
+        if default_resources:
+            prefix = conf['api'].get('default_resources_prefix', '')
+            self._load_resources(prefix)
