@@ -3,68 +3,19 @@
 import logging
 import os
 
-from smapy import API, resources
-from smapy.logging import SessionFilter
+from smapy import API
+from smapy.logging import logging_setup
 from smapy.utils import setenv, read_conf
 
-
-def get_logging_config(logging_conf):
-    return {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'formatters': {
-            'default': {
-                'format': logging_conf['format']
-            }
-        },
-        'filters': {
-            'session_none': {
-                '()': SessionFilter
-            }
-        },
-        'handlers': {
-            'console': {
-                'level': 'DEBUG',
-                'class': 'logging.StreamHandler',
-                'formatter': 'default',
-                'filters': ['session_none']
-            },
-        },
-        'loggers': {
-            'requests': {
-                'handlers': [logging_conf['handler']],
-                'propagate': True,
-                'level': 'WARN',
-            },
-            'urllib3': {
-                'handlers': [logging_conf['handler']],
-                'propagate': True,
-                'level': 'WARN',
-            },
-            '': {
-                'handlers': [logging_conf['handler']],
-                'propagate': True,
-                'level': logging_conf['level'],
-            },
-        }
-    }
+LOGGER = logging.getLogger(__name__)
 
 
 def get_app(api_conf):
     conf = read_conf(api_conf)
     setenv(conf['environ'])
 
-    logging.config.dictConfig(get_logging_config(conf['logging']))
+    logging_setup(conf.get('logging'))
 
-    logging.getLogger().info("Initializing the API")
+    LOGGER.info("Initializing the API")
 
-    api = API(conf)
-
-    # Misc
-    api.add_resource("/multi_process", resources.misc.MultiProcess)
-    api.add_resource('/report', resources.misc.Report)
-
-    # Testing
-    api.add_resource('/hello_world', resources.misc.HelloWorld)
-
-    return api
+    return API(conf)

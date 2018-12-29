@@ -10,7 +10,7 @@ with open('HISTORY.md') as history_file:
     history = history_file.read()
 
 install_requires = [
-    'ConcurrentLogHandler>=0.9.1',
+    'concurrent-log-handler>=0.9.12',
     'falcon>=1.4.1',
     'gevent>==1.2.2',
     'gunicorn>=19.8.1',

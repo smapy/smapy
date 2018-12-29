@@ -271,7 +271,8 @@ class TestAPI(TestCase):
             'mongodb': 'mongodb',
             'audit': 'auditdb',
             'api': {
-                'endpoint': 'an_endpoint'
+                'endpoint': 'an_endpoint',
+                'default_resources': False
             }
         }
 

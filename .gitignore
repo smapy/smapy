@@ -107,3 +107,6 @@ ENV/
 
 # vim
 .*.swp
+
+example/.__example.lock
+example/example.log
