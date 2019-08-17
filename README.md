@@ -2,19 +2,19 @@
 [![TravisCI][travis-img]][travis-url]
 [![CodeCov][codecov-img]][codecov-url]
 
-[travis-img]: https://travis-ci.org/csala/smapy.svg?branch=master
-[travis-url]: https://travis-ci.org/csala/smapy
+[travis-img]: https://travis-ci.org/smapy/smapy.svg?branch=master
+[travis-url]: https://travis-ci.org/smapy/smapy
 [pypi-img]: https://img.shields.io/pypi/v/smapy.svg
 [pypi-url]: https://pypi.python.org/pypi/smapy
-[codecov-img]: https://codecov.io/gh/csala/smapy/branch/master/graph/badge.svg
-[codecov-url]: https://codecov.io/gh/csala/smapy
+[codecov-img]: https://codecov.io/gh/smapy/smapy/branch/master/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/smapy/smapy
 
 # Smapy
 
 Simple Modular APIs written in Python.
 
 - Free software: MIT license
-- Documentation: https://csala.github.io/smapy
+- Documentation: https://smapy.github.io/smapy
 
 ## Overview
 
@@ -33,7 +33,7 @@ pip install smapy
 Alternatively, clone the repository and install it from source running the `make install` command.
 
 ```bash
-git clone git@github.com:csala/smapy.git
+git clone git@github.com:smapy/smapy.git
 cd smapy
 make install
 ```
