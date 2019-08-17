@@ -301,14 +301,17 @@ class TestAPI(TestCase):
         # Here we go into the API._middleware list and look for the classes
         # which the registered methods belong to.
         self.assertEqual(2, len(api_._middleware[0]))
-        self.assertIsInstance(api_._middleware[0][0][0].__self__, middleware.JSONSerializer)
-        self.assertIsInstance(api_._middleware[0][1][0].__self__, middleware.ResponseBuilder)
+        self.assertIsInstance(api_._middleware[0][0].__self__, middleware.JSONSerializer)
+        self.assertIsInstance(api_._middleware[0][1].__self__, middleware.ResponseBuilder)
 
         exception_serializer = api_._serialize_error
         self.assertEqual(api.exception_serializer, exception_serializer)
 
         unknown_exception_serializer = {e: f for e, f in api_._error_handlers}[Exception]
-        self.assertEqual(api.unknown_exception_serializer, unknown_exception_serializer)
+        self.assertEqual(
+            api.unknown_exception_serializer.__name__,
+            unknown_exception_serializer.__name__
+        )
 
         self.assertEqual(api_.endpoint, 'an_endpoint')
 
