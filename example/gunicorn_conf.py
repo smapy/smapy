@@ -1,14 +1,14 @@
-# import os
-import multiprocessing as mp
+# -*- coding: utf-8 -*-
+
+from  multiprocessing import cpu_count
 
 bind = "127.0.0.1:8001"
-workers = (2 * mp.cpu_count()) + 1
+workers = (2 * cpu_count()) + 1
 timeout = 3600
 worker_class = "gevent"
 
-# logs_dir = "logs"
-# errorlog = os.path.join(logs_dir, "gunicorn.log")
-# accesslog = os.path.join(logs_dir, "access.log")
+# errorlog = "gunicorn.log"
+# accesslog = "access.log"
 loglevel = "info"
 
 raw_env = [

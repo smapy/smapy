@@ -1,4 +1,5 @@
-from smapy.utils import find_submodules
+# -*- coding: utf-8 -*-
 
-modules = find_submodules(__name__)
-__all__ = modules.keys()
+from smapy.resources import misc
+
+__all__ = ('misc', )

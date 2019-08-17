@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import datetime
 from unittest import TestCase
 from unittest.mock import Mock, patch
@@ -29,7 +31,7 @@ class SubClassTest(TestCase):
         self.assertIn(FourLeggedShape, r)
         self.assertIn(ThreeLeggedShape, r)
         self.assertNotIn(Square, r)
-        self.assertEquals(2, len(r))
+        self.assertEqual(2, len(r))
 
     def test_recursive(self):
         s = Shape
@@ -38,26 +40,26 @@ class SubClassTest(TestCase):
         self.assertIn(FourLeggedShape, r)
         self.assertIn(ThreeLeggedShape, r)
         self.assertIn(Square, r)
-        self.assertEquals(3, len(r))
+        self.assertEqual(3, len(r))
 
     def test_no_subclasses_recursive(self):
         s = ThreeLeggedShape
         r = utils.find_subclasses(s, recursive=True)
         self.assertIsInstance(r, list)
-        self.assertEquals(0, len(r))
+        self.assertEqual(0, len(r))
 
     def test_no_subclasses_non_recursive(self):
         s = ThreeLeggedShape
         r = utils.find_subclasses(s, recursive=False)
         self.assertIsInstance(r, list)
-        self.assertEquals(0, len(r))
+        self.assertEqual(0, len(r))
 
     def test_with_subclasses_recursive(self):
         s = FourLeggedShape
         r = utils.find_subclasses(s, recursive=True)
         self.assertIsInstance(r, list)
         self.assertIn(Square, r)
-        self.assertEquals(1, len(r))
+        self.assertEqual(1, len(r))
 
     def test_non_type(self):
         s = Shape()
@@ -121,9 +123,13 @@ class SumDictsTest(TestCase):
 
 
 class ReadConfTest(TestCase):
-    def test_illegal_arg_type(self):
-        s = None
-        self.assertRaises(TypeError, utils.read_conf, s)
+
+    def test_no_conf_file(self):
+        # run
+        conf = utils.read_conf(None)
+
+        # assert
+        self.assertEqual(conf, dict())
 
     def test_illegal_filename(self):
         s = '/i_dont_exists/at_all.csv'

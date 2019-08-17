@@ -1,95 +1,21 @@
-#!/usr/bin/env python3.4
+# -*- coding: utf-8 -*-
+
 import logging
-import logging.config
 import os
 
-from smapy.logging import SessionFilter
+from smapy import API
+from smapy.logging_utils import logging_setup
 from smapy.utils import setenv, read_conf
 
-
-def get_logging_config(logging_conf):
-    dict_config = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'formatters': {
-            'default': {
-                'format': logging_conf['format']
-            }
-        },
-        'filters': {
-            'session_none': {
-                '()': SessionFilter
-            }
-        },
-        'handlers': {
-            'console': {
-                'level': 'DEBUG',
-                'class': 'logging.StreamHandler',
-                'formatter': 'default',
-                'filters': ['session_none']
-            },
-        },
-        'loggers': {
-            'requests': {
-                'handlers': [logging_conf['handler']],
-                'propagate': True,
-                'level': 'WARN',
-            },
-            'urllib3': {
-                'handlers': [logging_conf['handler']],
-                'propagate': True,
-                'level': 'WARN',
-            },
-            '': {
-                'handlers': [logging_conf['handler']],
-                'propagate': True,
-                'level': logging_conf['level'],
-            },
-        }
-    }
-    return dict_config
-
-
-def backdoor(bind, api):
-    from gevent.backdoor import BackdoorServer
-
-    print("Debugging backdoor listening at {}".format(bind))
-
-    host, port = tuple(bind.split(':'))
-    server = BackdoorServer((host, int(port)),
-                            banner="API backdoor",
-                            locals={'api': api})
-    server.serve_forever()
+LOGGER = logging.getLogger(__name__)
 
 
 def get_app(api_conf):
     conf = read_conf(api_conf)
     setenv(conf['environ'])
 
-    logging.config.dictConfig(get_logging_config(conf['logging']))
+    logging_setup(conf.get('logging'))
 
-    logging.getLogger().info("Initializing the API")
+    LOGGER.info("Initializing the API")
 
-    # Import actions and resources here to make sure that the
-    # environment is already configured
-    from smapy import API, actions, resources
-    api = API(conf)
-
-    api.load_actions(actions.modules)
-
-    # Misc
-    api.add_resource("/multi_process", resources.misc.MultiProcess)
-    api.add_resource('/report', resources.misc.Report)
-
-    # Testing
-    api.add_resource('/hello_world', resources.misc.HelloWorld)
-
-    backdoor_bind = os.getenv('BACKDOOR')
-    if backdoor_bind:
-        backdoor(backdoor_bind, api)
-
-    return api
-
-
-if __name__ == '__main__':
-    app = get_app('example.ini')
+    return API(conf)

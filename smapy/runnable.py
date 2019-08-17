@@ -1,11 +1,11 @@
+# -*- coding: utf-8 -*-
+
 import logging
 from abc import ABCMeta, abstractmethod
 
 import falcon
 import requests
 from bson import ObjectId, json_util
-
-# from smapy.logging import SessionFilter
 
 
 class RemoteRunnable(object):
