@@ -11,7 +11,7 @@ with open('HISTORY.md') as history_file:
 
 install_requires = [
     'concurrent-log-handler>=0.9.12',
-    'falcon>=1.4.1',
+    'falcon>=1.4.1,<2',
     'gevent>==1.2.2',
     'gunicorn>=19.8.1',
     'pymongo>=3.6.1',
