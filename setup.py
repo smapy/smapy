@@ -10,12 +10,12 @@ with open('HISTORY.md') as history_file:
     history = history_file.read()
 
 install_requires = [
-    'concurrent-log-handler>=0.9.12',
+    'concurrent-log-handler>=0.9.12,<0.10',
     'falcon>=1.4.1,<2',
-    'gevent>==1.2.2',
-    'gunicorn>=19.8.1',
-    'pymongo>=3.6.1',
-    'requests>=2.19.1',
+    'gevent>=1.2.2,<2',
+    'gunicorn>=19.8.1,<21',
+    'pymongo>=3.6.1,<4',
+    'requests>=2.19.1,<3',
 ]
 
 tests_require = [
@@ -25,30 +25,35 @@ tests_require = [
 
 development_requires = [
     # general
-    'bumpversion>=0.5.3',
     'pip>=9.0.1',
-    'watchdog>=0.8.3',
+    'bumpversion>=0.5.3,<0.6',
+    'watchdog>=0.8.3,<0.11',
 
     # docs
-    'm2r>=0.2.0',
-    'Sphinx>=1.7.1',
-    'sphinx_rtd_theme>=0.2.4',
+    'm2r>=0.2.0,<0.3',
+    'nbsphinx>=0.5.0,<0.7',
+    'Sphinx>=1.7.1,<3',
+    'sphinx_rtd_theme>=0.2.4,<0.5',
 
     # style check
-    'flake8>=3.5.0',
-    'isort>=4.3.4',
+    'flake8>=3.7.7,<4',
+    'isort>=4.3.4,<5',
 
     # fix style issues
-    'autoflake>=1.2',  # keep this after flake8 to avoid
-    'autopep8>=1.3.5', # version incompatibilities with flake8
+    'autoflake>=1.1,<2',
+    'autopep8>=1.4.3,<2',
 
     # distribute on PyPI
-    'twine>=1.10.0',
+    'twine>=1.10.0,<4',
     'wheel>=0.30.0',
 
     # Advanced testing
-    'tox>=2.9.1',
-    'coverage>=4.5.1',
+    'coverage>=4.5.1,<6',
+    'tox>=2.9.1,<4',
+
+    # Documentation style
+    'doc8==0.8.0,<0.9',
+    'pydocstyle==3.0.0,<4',
 ]
 
 setup_requires = [
@@ -64,10 +69,10 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
     description="Simple Modular API written in Python.",
     entry_points = {
@@ -87,7 +92,7 @@ setup(
     long_description_content_type='text/markdown',
     name='smapy',
     packages=find_packages(include=['smapy*']),
-    python_requires='>=3.4',
+    python_requires='>=3.5',
     setup_requires=setup_requires,
     test_suite='tests',
     tests_require=tests_require,

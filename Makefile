@@ -88,6 +88,10 @@ lint: ## check style with flake8 and isort
 	flake8 smapy tests
 	isort -c --recursive smapy tests
 
+lint-docs: ## check docs formatting with doc8 and pydocstyle
+	doc8 smapy docs/
+	pydocstyle smapy/
+
 .PHONY: fix-lint
 fix-lint: ## fix lint issues using autoflake, autopep8, and isort
 	find smapy -name '*.py' | xargs autoflake --in-place --remove-all-unused-imports --remove-unused-variables
@@ -107,7 +111,7 @@ test: ## run tests quickly with the default Python
 
 .PHONY: test-all
 test-all: ## run tests on every Python version with tox
-	tox
+	tox -r
 
 .PHONY: coverage
 coverage: ## check code coverage quickly with the default Python
@@ -150,11 +154,11 @@ confirm-publish:
 
 .PHONY: publish-test
 publish-test: dist confirm-publish ## package and upload a release on TestPyPI
-	twine upload -r csala-test dist/*
+	twine upload -r pypitest dist/*
 
 .PHONY: publish
 publish: dist confirm-publish ## package and upload a release
-	twine upload -r csala dist/*
+	twine upload -r dist/*
 
 .PHONY: bumpversion-release
 bumpversion-release: ## Merge master to stable and bumpversion release
