@@ -1,5 +1,9 @@
 # History
 
+## 0.0.3
+
+New release scripts.
+
 ## 0.0.2
 
 * Add `smapy` CLI
