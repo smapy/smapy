@@ -92,6 +92,6 @@ setup(
     test_suite='tests',
     tests_require=tests_require,
     url='https://github.com/csala/smapy',
-    version='0.0.3-dev',
+    version='0.0.3.dev0',
     zip_safe=False,
 )
